@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Home">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/repliqueInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="@string/replique_hint"
+                android:importantForAutofill="no" />
+
+            <LinearLayout
+                android:id="@+id/filterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/characterButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:text="@string/character_button" />
+
+                <Button
+                    android:id="@+id/livreButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:text="@string/livre_button" />
+
+                <Button
+                    android:id="@+id/episodeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:text="@string/episode_button" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="#BDBDBD">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintEnd_toStartOf="@+id/textView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.15"
+                    app:srcCompat="@drawable/dame_du_lac" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:includeFontPadding="false"
+                    android:justificationMode="inter_word"
+                    android:lineSpacingExtra="0dp"
+                    android:text="Quand vous les aurez ces enfants évitez toutes les imbécilités modernes, les gentillesses les caresses, les p'tits bisous, ce genre de conneries... non, les enfants, il faut les détester !  C'est comme ça qu'ils deviennent hargneux !"
+                    app:layout_constraintBottom_toTopOf="@+id/textView2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:includeFontPadding="false"
+                    android:text="Demetra - Livre IV - Episode 4 : Tous les matins du monde 1re partie"
+                    android:textStyle="italic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"
+                android:background="#BDBDBD">
+
+                <ImageView
+                    android:id="@+id/imageView_"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintEnd_toStartOf="@+id/textView_"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.15"
+                    app:srcCompat="@drawable/demetra" />
+
+                <TextView
+                    android:id="@+id/textView_"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:includeFontPadding="false"
+                    android:justificationMode="inter_word"
+                    android:lineSpacingExtra="0dp"
+                    android:text="Quand vous les aurez ces enfants évitez toutes les imbécilités modernes, les gentillesses les caresses, les p'tits bisous, ce genre de conneries... non, les enfants, il faut les détester !  C'est comme ça qu'ils deviennent hargneux !"
+                    app:layout_constraintBottom_toTopOf="@+id/textView2_"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView2_"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:includeFontPadding="false"
+                    android:text="Arthur - Livre I - Episode 98 : Le test du texte long"
+                    android:textStyle="italic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:background="#BDBDBD">
+
+                <ImageView
+                    android:id="@+id/imageView__"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintEnd_toStartOf="@+id/textView__"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.15"
+                    app:srcCompat="@drawable/arthur" />
+
+                <TextView
+                    android:id="@+id/textView__"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:includeFontPadding="false"
+                    android:justificationMode="inter_word"
+                    android:lineSpacingExtra="0dp"
+                    android:text="En ce moment je m'endors tout le temps. Je peux rien y faire. Je fais des rêves. Je vais vous en raconter un. Je suis dans l'espace avec un vieux. Je vous raconte pas ça au hasard, quand je me suis réveillé, j'ai tout de suite pensé à vous. L'espace... Ca a toujours été votre truc ça, l'espace. Et les vieux, y en a toujours dans vos histoires à vous. Bref, je flotte dans l'espace, avec les étoiles et tout, et y a un vieux à côté. Alors je sais pas si c'est moi vieux, parce que pff, les rêves c'est toujours le bordel pour ça, et le vieux me fait, vous êtes prêt à avoir le Graal ? Alors moi je réponds oui. Alors on se dirige vers, une grande boule, mais en fait c'est notre terre à nous. Sauf qu'au lieu d'être bien plate, elle est en boule quoi. Comme je disais les rêves c'est toujours le bordel. On descend, on descend, on atterrit sur un sentier, dans une forêt, sur le territoire du seigneur Dagonet. Alors me demandez pas pourquoi, d'autant qu'il est même pas dans le rêve ce con là mais... Jsais pas comment vous dire, je sais qu'on est chez Dagonet. Le vieux se retourne, il me fait, j'espère que vous avez pas peur de la marche, parce que je vous préviens, c'est pas la porte à côté. Bah, moi je lui réponds, je comprends pas pourquoi on a pas atterri directement plus près alors. Il me répond pas, il part devant. Je le suis, je le suis, je le suis, puis au bout d'un moment, je me dis merde, c'est le chemin de Kaamelott ici. Oh, que je lui fais au vieux, c'est pas le chemin de Kaamelott ça ? Si pourquoi ? Comment pourquoi, je lui fais ?Bah le Graal il est pas à Kaamelott, quand même ! Si, il me fait. Alors je m'arrête. Vous vous foutez de moi ? Il se retourne, il me dit, vous voulez le voir le Graal ou vous voulez pas le voir ?Bon bah alors bouclez là et suivez !Pis il repart. Bon... On arrive à Kaamelott, la baraque vide. Pas un garde à l'entrée, pas un loufiat dans les couloirs, on passe devant la salle de la Table Ronde, pas de Table Ronde, la pièce vide. On continue, on continue, et on arrive devant la porte de ma salle de bain. Voilà ! Ouvrez, c'est là derrière. Jlui fais, là derrière, où ça, dans la salle de bain ? Ouais, dans la salle de bain. Alors, je le regarde, j'essaie de voir s'il est pas beurré ou quoi, et pis il rentre, là y a la baignoire vide, enfin vide, y a de l'eau mais y a personne dedans, et pis du sang partout, partout, partout, partout... Il me fait, voilà ! C'est le Graal ! Quoi qu'est le Graal, la salle de bain ?Non pas la salle de bain, la baignoire ! La baignoire, c'est le Graal ? Ouais, c'est le récipient qu'a reçu le sang du Christ. Alors là dans le rêve, jlui mets une tarte au vieux. Mais la bonne tartine attention, la tête qui part de côté, les cheveux de travers, et tout. Tu te paies ma gueule que je lui fais ? Pis là mon dieu c'est lui qui se retourne et qui revient, qui me fout une avoine, j'ai l'impression que le plafond me tombe sur la gueule, je me ressaisis, et il me dit, qu'est ce que c'est que quelqu'un qui souffre, et qui fait couler son sang par terre pour que tout le monde soit coupable ?Tous les suicidés sont le Christ, et toutes les baignoires sont le Graal. Et vous savez qu'on s'est toujours demandé s'il y avait pas une inscription gravée au fond du Graal ? Hé bah oui y en a une. Allez voir qu'il me fait. Alors j'y vais, et au fond de la baignoire, y a marqué, vous m'avez bien cassé les couilles... Et boum jme réveille."
+                    app:layout_constraintBottom_toTopOf="@+id/textView2__"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView__"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView2__"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:includeFontPadding="false"
+                    android:text="Arthur - Livre I - Episode 98"
+                    android:textStyle="italic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView__"
+                    app:layout_constraintTop_toBottomOf="@+id/textView__" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
