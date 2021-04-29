@@ -6,14 +6,19 @@ import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static android.graphics.text.LineBreaker.JUSTIFICATION_MODE_INTER_WORD;
 
 public class Home extends AppCompatActivity {
 
@@ -33,6 +38,7 @@ public class Home extends AppCompatActivity {
     private int EIGHT_DP;
 
     private static final Map<String,Integer> IMAGE_DICTIONARY = new HashMap<>();
+    private static final String[] romanDigit = {"0","I","II","III","IV","V","VI"};
 
     private String replique = "";
     private String character = "";
@@ -56,7 +62,7 @@ public class Home extends AppCompatActivity {
         mDbHelper.createDatabase();
         mDbHelper.open();
 
-        Cursor repliqueCursor = mDbHelper.findRepliqueWithKeyword("test");
+        Cursor repliqueCursor = mDbHelper.findRepliqueWithKeyword("les gentillesses");
 
         while (repliqueCursor.moveToNext()) {
             character = repliqueCursor.getString(DICO_REPLIQUE_PERSONNAGE);
@@ -70,7 +76,11 @@ public class Home extends AppCompatActivity {
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             infosLayoutParams.setMargins(0,FOUR_DP,0,FOUR_DP);
             infosLayout.setLayoutParams(infosLayoutParams);
-            infosLayout.setBackgroundColor(getResources().getColor(R.color.grey));
+            infosLayout.setBackgroundColor(getColor(R.color.grey));
+
+            // Create parameters for ConstraintLayout children
+            ConstraintLayout.LayoutParams genericLayoutParams = new ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
 
             // CharacterImage Setup
             ImageView characterImage = new ImageView(this);
@@ -81,28 +91,57 @@ public class Home extends AppCompatActivity {
                 characterImage.setImageResource(R.drawable.joueur_de_bonneteau);
             }
 
-            // CharacterImage parameters
-            ConstraintLayout.LayoutParams characterImageParams = new ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-            characterImageParams.setMargins(0, 0, 0,FOUR_DP);
-            characterImage.setLayoutParams(characterImageParams);
+            characterImage.setLayoutParams(new ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
             characterImage.setId(View.generateViewId());
             characterImage.setAdjustViewBounds(true);
 
+            // RepliqueView Setup
+            TextView repliqueView = new TextView(this);
+            repliqueView.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
+            repliqueView.setLayoutParams(new ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+            repliqueView.setId(View.generateViewId());
+            repliqueView.setIncludeFontPadding(false);
+            repliqueView.setText(replique);
+
+            // RepliqueView Setup
+            TextView repliqueInfosView = new TextView(this);
+            repliqueInfosView.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
+            repliqueInfosView.setTypeface(null, Typeface.ITALIC);
+            repliqueInfosView.setLayoutParams(new ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+            repliqueInfosView.setId(View.generateViewId());
+            repliqueInfosView.setIncludeFontPadding(false);
+            repliqueInfosView.setText(character + " - Livre " + romanDigit[livre] + " - Episode " + episode + " : " + getEpisodeName(livre,episode));
+
             // Adding view to layout
             infosLayout.addView(characterImage);
+            infosLayout.addView(repliqueView);
+            infosLayout.addView(repliqueInfosView);
 
             // Add constraints between children
             ConstraintSet characterImageConstraints = new ConstraintSet();
             characterImageConstraints.clone(infosLayout);
+
             characterImageConstraints.connect(characterImage.getId(),ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START,FOUR_DP);
+            characterImageConstraints.connect(characterImage.getId(),ConstraintSet.END,repliqueView.getId(),ConstraintSet.START,0);
             characterImageConstraints.connect(characterImage.getId(),ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM,FOUR_DP);
             characterImageConstraints.connect(characterImage.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,FOUR_DP);
             characterImageConstraints.setVerticalBias(characterImage.getId(),0);
             characterImageConstraints.constrainPercentWidth(characterImage.getId(),0.15F);
-            characterImageConstraints.applyTo(infosLayout);
 
-            // textView.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
+            characterImageConstraints.connect(repliqueView.getId(),ConstraintSet.START,characterImage.getId(),ConstraintSet.END,EIGHT_DP);
+            characterImageConstraints.connect(repliqueView.getId(),ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END,EIGHT_DP);
+            characterImageConstraints.connect(repliqueView.getId(),ConstraintSet.BOTTOM,repliqueInfosView.getId(),ConstraintSet.TOP,0);
+            characterImageConstraints.connect(repliqueView.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,FOUR_DP);
+
+            characterImageConstraints.connect(repliqueInfosView.getId(),ConstraintSet.START,characterImage.getId(),ConstraintSet.END,EIGHT_DP);
+            characterImageConstraints.connect(repliqueInfosView.getId(),ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END,EIGHT_DP);
+            characterImageConstraints.connect(repliqueInfosView.getId(),ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM,FOUR_DP);
+            characterImageConstraints.connect(repliqueInfosView.getId(),ConstraintSet.TOP,repliqueView.getId(),ConstraintSet.BOTTOM,FOUR_DP);
+
+            characterImageConstraints.applyTo(infosLayout);
 
             // Add the info layout to the main layout
             mainLayout.addView(infosLayout);
@@ -114,6 +153,11 @@ public class Home extends AppCompatActivity {
     private boolean characterExists(String character) {
         Cursor characterCursor = mDbHelper.findCharacter(character);
         return characterCursor.moveToNext();
+    }
+
+    private String getEpisodeName(int livre, int episode) {
+        Cursor episodeCursor = mDbHelper.findEpisode(livre, episode);
+        return episodeCursor.getString(DICO_EPISODE_EPISODE_NAME);
     }
 
     private int convertDpToPx(int dpValue) {

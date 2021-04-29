@@ -66,6 +66,20 @@ public class TestAdapter {
         }
     }
 
+    public Cursor findEpisode(int livre, int episode) {
+        try {
+            String sql ="SELECT * FROM DICO_EPISODE WHERE LIVRE = " + livre + " AND EPISODE = " + episode;
+            Cursor cursor = mDb.rawQuery(sql, null);
+            if (cursor != null) {
+                cursor.moveToNext();
+            }
+            return cursor;
+        } catch (SQLException mSQLException) {
+            Log.e(TAG, "getTestData >>"+ mSQLException.toString());
+            throw mSQLException;
+        }
+    }
+
     public Cursor findAllCharacters() {
         try {
             String sql ="SELECT * FROM DICO_PERSONNAGE ORDER BY PERSONNAGE";
