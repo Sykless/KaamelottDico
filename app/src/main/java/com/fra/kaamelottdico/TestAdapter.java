@@ -48,7 +48,7 @@ public class TestAdapter {
 
     public Cursor findRepliqueWithKeyword(String keyword) {
         try {
-            String sql ="SELECT * FROM DICO_REPLIQUE WHERE REPLIQUE LIKE '%" + keyword + "%'";
+            String sql ="SELECT * FROM DICO_REPLIQUE WHERE REPLIQUE LIKE '%" + keyword + "%' ORDER BY LIVRE, EPISODE, REPLIQUE_ID";
             return mDb.rawQuery(sql, null);
         } catch (SQLException mSQLException) {
             Log.e(TAG, "getTestData >>"+ mSQLException.toString());
