@@ -1,9 +1,14 @@
 package com.fra.kaamelottdico;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -24,64 +29,99 @@ public class Home extends AppCompatActivity {
     private static final int DICO_EPISODE_EPISODE = 1;
     private static final int DICO_EPISODE_EPISODE_NAME = 2;
 
+    private int FOUR_DP;
+    private int EIGHT_DP;
+
     private static final Map<String,Integer> IMAGE_DICTIONARY = new HashMap<>();
 
-    private String character = "";
     private String replique = "";
+    private String character = "";
     private int livre;
     private int episode;
+
+    private TestAdapter mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        populateIMAGE_DICTIONARY();
-        this.deleteDatabase("kaamelottreplique.db");
+        populateImageDictionary();
+        FOUR_DP = convertDpToPx(4);
+        EIGHT_DP = convertDpToPx(8);
 
-        TestAdapter mDbHelper = new TestAdapter(this);
+        LinearLayout mainLayout = findViewById(R.id.mainLayout);
+
+        mDbHelper = new TestAdapter(this);
         mDbHelper.createDatabase();
         mDbHelper.open();
 
-        Cursor cursor = mDbHelper.findRepliqueWithKeyword("pipi");
+        Cursor repliqueCursor = mDbHelper.findRepliqueWithKeyword("test");
 
-        while (cursor.moveToNext()) {
-            character = cursor.getString(DICO_REPLIQUE_PERSONNAGE);
-            replique = cursor.getString(DICO_REPLIQUE_PERSONNAGE);
-            livre = cursor.getInt(DICO_REPLIQUE_LIVRE);
-            episode = cursor.getInt(DICO_REPLIQUE_EPISODE);
+        while (repliqueCursor.moveToNext()) {
+            character = repliqueCursor.getString(DICO_REPLIQUE_PERSONNAGE);
+            replique = repliqueCursor.getString(DICO_REPLIQUE_REPLIQUE);
+            livre = repliqueCursor.getInt(DICO_REPLIQUE_LIVRE);
+            episode = repliqueCursor.getInt(DICO_REPLIQUE_EPISODE);
 
-            //LinearLayOut Setup
-            LinearLayout linearLayout= new LinearLayout(this);
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            // Create ConstraintLayout to display every info
+            ConstraintLayout infosLayout = new ConstraintLayout(this);
+            LinearLayout.LayoutParams infosLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            infosLayoutParams.setMargins(0,FOUR_DP,0,FOUR_DP);
+            infosLayout.setLayoutParams(infosLayoutParams);
+            infosLayout.setBackgroundColor(getResources().getColor(R.color.grey));
 
-            linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT));
+            // CharacterImage Setup
+            ImageView characterImage = new ImageView(this);
 
-            //ImageView Setup
-            ImageView imageView = new ImageView(this);
-            imageView.setImageResource(IMAGE_DICTIONARY.get("Flaccus"));
+            if (characterExists(character)) {
+                characterImage.setImageResource(IMAGE_DICTIONARY.get(character));
+            } else {
+                characterImage.setImageResource(R.drawable.joueur_de_bonneteau);
+            }
+
+            // CharacterImage parameters
+            ConstraintLayout.LayoutParams characterImageParams = new ConstraintLayout.LayoutParams(
+                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+            characterImageParams.setMargins(0, 0, 0,FOUR_DP);
+            characterImage.setLayoutParams(characterImageParams);
+            characterImage.setId(View.generateViewId());
+            characterImage.setAdjustViewBounds(true);
+
+            // Adding view to layout
+            infosLayout.addView(characterImage);
+
+            // Add constraints between children
+            ConstraintSet characterImageConstraints = new ConstraintSet();
+            characterImageConstraints.clone(infosLayout);
+            characterImageConstraints.connect(characterImage.getId(),ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START,FOUR_DP);
+            characterImageConstraints.connect(characterImage.getId(),ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM,FOUR_DP);
+            characterImageConstraints.connect(characterImage.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,FOUR_DP);
+            characterImageConstraints.setVerticalBias(characterImage.getId(),0);
+            characterImageConstraints.constrainPercentWidth(characterImage.getId(),0.15F);
+            characterImageConstraints.applyTo(infosLayout);
 
             // textView.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
-            // setIncludeFontPadding (boolean includepad)
 
-            imageView.setAdjustViewBounds(true);
-
-            //setting image position
-            imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-
-            //adding view to layout
-            linearLayout.addView(imageView);
-
-            //make visible to program
-            //setContentView(linearLayout);
+            // Add the info layout to the main layout
+            mainLayout.addView(infosLayout);
         }
 
         mDbHelper.close();
     }
 
-    private void populateIMAGE_DICTIONARY() {
+    private boolean characterExists(String character) {
+        Cursor characterCursor = mDbHelper.findCharacter(character);
+        return characterCursor.moveToNext();
+    }
+
+    private int convertDpToPx(int dpValue) {
+        Resources r = this.getResources();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, r.getDisplayMetrics());
+    }
+
+    private void populateImageDictionary() {
         IMAGE_DICTIONARY.put("Acheflour",R.drawable.acheflour);
         IMAGE_DICTIONARY.put("Aconia",R.drawable.aconia);
         IMAGE_DICTIONARY.put("Aelis",R.drawable.aelis);

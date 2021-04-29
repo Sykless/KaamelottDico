@@ -56,6 +56,16 @@ public class TestAdapter {
         }
     }
 
+    public Cursor findCharacter(String character) {
+        try {
+            String sql ="SELECT * FROM DICO_PERSONNAGE WHERE PERSONNAGE = '" + character + "'";
+            return mDb.rawQuery(sql, null);
+        } catch (SQLException mSQLException) {
+            Log.e(TAG, "getTestData >>"+ mSQLException.toString());
+            throw mSQLException;
+        }
+    }
+
     public Cursor findAllCharacters() {
         try {
             String sql ="SELECT * FROM DICO_PERSONNAGE ORDER BY PERSONNAGE";
