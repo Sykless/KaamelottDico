@@ -3,6 +3,7 @@ package com.fra.kaamelottdico;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.text.HtmlCompat;
 
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,8 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.deleteDatabase("DICO_KAAMELOTT.db");
+
         populateImageDictionary();
         FOUR_DP = convertDpToPx(4);
         EIGHT_DP = convertDpToPx(8);
@@ -62,7 +66,8 @@ public class Home extends AppCompatActivity {
         mDbHelper.createDatabase();
         mDbHelper.open();
 
-        Cursor repliqueCursor = mDbHelper.findRepliqueWithKeyword("les gentillesses");
+        String keyword = "soldat";
+        Cursor repliqueCursor = mDbHelper.findRepliqueWithKeyword(keyword);
 
         while (repliqueCursor.moveToNext()) {
             character = repliqueCursor.getString(DICO_REPLIQUE_PERSONNAGE);
@@ -103,7 +108,7 @@ public class Home extends AppCompatActivity {
                     ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
             repliqueView.setId(View.generateViewId());
             repliqueView.setIncludeFontPadding(false);
-            repliqueView.setText(replique);
+            repliqueView.setText(HtmlCompat.fromHtml(getFormattedReplique(replique,keyword), HtmlCompat.FROM_HTML_MODE_COMPACT));
 
             // RepliqueView Setup
             TextView repliqueInfosView = new TextView(this);
@@ -148,6 +153,41 @@ public class Home extends AppCompatActivity {
         }
 
         mDbHelper.close();
+    }
+
+    private String getFormattedReplique(String replique, String keyword) {
+        String completeReplique = "";
+        String[] separatedReplique = replique.split("(?i)" + keyword);
+        List<String> originalKeywords = new ArrayList<>();
+
+        // Find all words matching keyword case insensitive
+        for (int i = 0 ; i < replique.length() - keyword.length() + 1 ; i++) {
+            String stringToCompare = replique.substring(i,i+keyword.length());
+
+            if (stringToCompare.equalsIgnoreCase(keyword)) {
+                originalKeywords.add(stringToCompare);
+                i += keyword.length() - 1;
+            }
+        }
+
+        // Concatenate splitted segmeents with bold keywords
+        for (int i = 0 ; i < separatedReplique.length ; i++) {
+            completeReplique += separatedReplique[i];
+
+            if (i < separatedReplique.length - 1 || separatedReplique.length == originalKeywords.size()) {
+                completeReplique += "<b>" + originalKeywords.get(i) + "</b>";
+            }
+        }
+
+        return completeReplique;
+    }
+
+    private void displayList(String[] list) {
+        for (String string : list) {
+            System.out.print(string + " - ");
+        }
+
+        System.out.println();
     }
 
     private boolean characterExists(String character) {
