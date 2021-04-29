@@ -22,7 +22,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/mainLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -69,6 +68,13 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginLeft="4dp"
                     android:text="@string/episode_button" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mainLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

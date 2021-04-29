@@ -9,8 +9,11 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -56,17 +59,35 @@ public class Home extends AppCompatActivity {
 
         this.deleteDatabase("DICO_KAAMELOTT.db");
 
+        EditText repliqueInput = findViewById(R.id.repliqueInput);
+
+        repliqueInput.addTextChangedListener(
+                new TextWatcher() {
+                    @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+                    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                    @Override
+                    public void afterTextChanged(final Editable input) {
+                        if (input.length() > 3) {
+                            refreshMainLayout(input.toString());
+                        }
+                    }
+                }
+        );
+
         populateImageDictionary();
         FOUR_DP = convertDpToPx(4);
         EIGHT_DP = convertDpToPx(8);
+    }
 
-        LinearLayout mainLayout = findViewById(R.id.mainLayout);
-
+    private void refreshMainLayout(String keyword) {
         mDbHelper = new TestAdapter(this);
         mDbHelper.createDatabase();
         mDbHelper.open();
 
-        String keyword = "soldat";
+        LinearLayout mainLayout = findViewById(R.id.mainLayout);
+        mainLayout.removeAllViews();
+
         Cursor repliqueCursor = mDbHelper.findRepliqueWithKeyword(keyword);
 
         while (repliqueCursor.moveToNext()) {
