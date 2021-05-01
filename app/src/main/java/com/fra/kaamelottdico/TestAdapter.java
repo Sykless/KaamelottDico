@@ -1,6 +1,9 @@
 package com.fra.kaamelottdico;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -46,9 +49,13 @@ public class TestAdapter {
         mDbHelper.close();
     }
 
-    public Cursor findRepliqueWithKeyword(String keyword) {
+    public Cursor findRepliqueWithFilters(String keyword, List<String> characters, List<String> livres, List<String> episodes) {
         try {
-            String sql ="SELECT * FROM DICO_REPLIQUE WHERE REPLIQUE LIKE '%" + keyword + "%' ORDER BY LIVRE, EPISODE, REPLIQUE_ID";
+            String characterFilter = convertListToString(characters,"PERSONNAGE");
+            String livreFilter = convertListToString(livres, "LIVRE");
+            String episodeFilter = convertListToString(episodes, "EPISODE");
+
+            String sql = "SELECT * FROM DICO_REPLIQUE WHERE REPLIQUE LIKE '%" + keyword.replace("'","''") + "%'" + characterFilter + livreFilter + episodeFilter + " ORDER BY LIVRE, EPISODE, REPLIQUE_ID";
             return mDb.rawQuery(sql, null);
         } catch (SQLException mSQLException) {
             Log.e(TAG, "getTestData >>"+ mSQLException.toString());
@@ -58,7 +65,7 @@ public class TestAdapter {
 
     public Cursor findCharacter(String character) {
         try {
-            String sql ="SELECT * FROM DICO_PERSONNAGE WHERE PERSONNAGE = '" + character + "'";
+            String sql = "SELECT * FROM DICO_PERSONNAGE WHERE PERSONNAGE = '" + character + "'";
             return mDb.rawQuery(sql, null);
         } catch (SQLException mSQLException) {
             Log.e(TAG, "getTestData >>"+ mSQLException.toString());
@@ -87,6 +94,24 @@ public class TestAdapter {
         } catch (SQLException mSQLException) {
             Log.e(TAG, "findAllCharacters >>"+ mSQLException.toString());
             throw mSQLException;
+        }
+    }
+
+    private String convertListToString(List<String> list, String filterType) {
+        if (list.size() > 0) {
+            String sqlFilter = " AND " + filterType + " IN (";
+
+            for (int i = 0 ; i < list.size() ; i++) {
+                sqlFilter += "'" + list.get(i).replace("'","''")  + "'";
+
+                if (i != list.size() - 1) {
+                    sqlFilter += ",";
+                }
+            }
+
+            return sqlFilter + ")";
+        } else {
+            return "";
         }
     }
 }

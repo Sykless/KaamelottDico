@@ -13,10 +13,16 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,15 +45,32 @@ public class Home extends AppCompatActivity {
     private static final int DICO_EPISODE_EPISODE = 1;
     private static final int DICO_EPISODE_EPISODE_NAME = 2;
 
+    private int ONE_DP;
     private int FOUR_DP;
     private int EIGHT_DP;
+    private int TWENTY_DP;
 
     private static final Map<String,Integer> IMAGE_DICTIONARY = new HashMap<>();
     private static final String[] romanDigit = {"0","I","II","III","IV","V","VI"};
+
     private List<String> characterList = new ArrayList<>();
-    private String[] characterArray;
+    private List<List<String>> episodeList = new ArrayList<>();
+    private List<String> livreList = new ArrayList<>();
+
+    private List<String> characterFilter = new ArrayList<>();
+    private List<String> episodeFilter = new ArrayList<>();
+    private List<String> livreFilter = new ArrayList<>();
 
     private TestAdapter mDbHelper;
+    private LinearLayout mainLayout;
+    private LinearLayout biggerLayout;
+    private ConstraintLayout characterFilterLayout;
+    private CustomArrayAdapter characterArrayAdapter;
+    private FlexboxLayout flexboxLayout;
+    private AutoCompleteTextView characterInput;
+
+    private Button searchButton;
+    private Button characterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,27 +79,64 @@ public class Home extends AppCompatActivity {
 
         this.deleteDatabase("DICO_KAAMELOTT.db");
 
-        EditText repliqueInput = findViewById(R.id.repliqueInput);
-
-        repliqueInput.addTextChangedListener(
-                new TextWatcher() {
-                    @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
-                    @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-                    @Override
-                    public void afterTextChanged(final Editable input) {
-                        if (input.length() > 3) {
-                            refreshMainLayout(input.toString());
-                        }
-                    }
-                }
-        );
-
-        FOUR_DP = convertDpToPx(4);
-        EIGHT_DP = convertDpToPx(8);
-
         populateImageDictionary();
         populateCharacterList();
+
+        EditText repliqueInput = findViewById(R.id.repliqueInput);
+        characterFilterLayout = findViewById(R.id.characterFilterLayout);
+        characterInput = findViewById(R.id.characterInput);
+        flexboxLayout = findViewById(R.id.characterNamesFilter);
+        mainLayout = findViewById(R.id.mainLayout);
+        biggerLayout = findViewById(R.id.biggerLayout);
+        searchButton = findViewById(R.id.searchButton);
+        characterButton = findViewById(R.id.characterButton);
+
+        searchButton.setOnClickListener(view -> refreshMainLayout(repliqueInput.getText().toString()));
+
+        characterButton.setOnClickListener(view -> {
+            if (characterFilterLayout.getVisibility() == View.GONE) {
+                characterFilterLayout.setVisibility(View.VISIBLE);
+            } else {
+                characterFilterLayout.setVisibility(View.GONE);
+            }
+        });
+
+        // Search for repliques on any change in EditText
+        repliqueInput.addTextChangedListener(new TextWatcher() {
+                 @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+                 @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                 @Override
+                 public void afterTextChanged(final Editable input) {
+                     if (input.length() >= 3) {
+                         searchButton.setAlpha(1);
+                         searchButton.setClickable(true);
+                     } else {
+                         searchButton.setAlpha(0.5f);
+                         searchButton.setClickable(false);
+                     }
+                 }
+             }
+        );
+
+        // Setup characters list in character filter
+        characterArrayAdapter = new CustomArrayAdapter(this,android.R.layout.simple_list_item_1,characterList);
+        characterInput.setThreshold(2);
+        characterInput.setAdapter(characterArrayAdapter);
+        characterInput.setOnItemClickListener((parent, view, pos, id) -> {
+            String characterName = characterArrayAdapter.getItem(pos).toString();
+
+            flexboxLayout.addView(createCharaterButton(characterName));
+            characterInput.setText("");
+
+            characterList.remove(characterName);
+            updateCharacterArray();
+        });
+
+        ONE_DP = convertDpToPx(1);
+        FOUR_DP = convertDpToPx(4);
+        EIGHT_DP = convertDpToPx(8);
+        TWENTY_DP = convertDpToPx(20);
     }
 
     private void refreshMainLayout(String keyword) {
@@ -84,10 +144,10 @@ public class Home extends AppCompatActivity {
         mDbHelper.createDatabase();
         mDbHelper.open();
 
-        LinearLayout mainLayout = findViewById(R.id.mainLayout);
         mainLayout.removeAllViews();
 
-        Cursor repliqueCursor = mDbHelper.findRepliqueWithKeyword(keyword);
+        populateFilters();
+        Cursor repliqueCursor = mDbHelper.findRepliqueWithFilters(keyword, characterFilter, episodeFilter, livreFilter);
 
         while (repliqueCursor.moveToNext()) {
             // Create ConstraintLayout
@@ -98,6 +158,71 @@ public class Home extends AppCompatActivity {
         }
 
         mDbHelper.close();
+    }
+
+    private ConstraintLayout createCharaterButton(String characterName) {
+
+        ONE_DP = convertDpToPx(1);
+        FOUR_DP = convertDpToPx(4);
+        EIGHT_DP = convertDpToPx(8);
+        TWENTY_DP = convertDpToPx(20);
+
+        // Create ConstraintLayout to display character name
+        ConstraintLayout characterButton = new ConstraintLayout(this);
+        FlexboxLayout.LayoutParams characterButtonParams = new FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT, FlexboxLayout.LayoutParams.WRAP_CONTENT);
+        characterButtonParams.setMargins(0,0,EIGHT_DP,EIGHT_DP);
+        characterButton.setLayoutParams(characterButtonParams);
+        characterButton.setBackground(getDrawable(R.drawable.rectangle_shape));
+
+        // characterNameText Setup
+        TextView characterNameText = new TextView(this);
+        characterNameText.setLayoutParams(new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
+        characterNameText.setId(View.generateViewId());
+        characterNameText.setIncludeFontPadding(false);
+        characterNameText.setSingleLine(true);
+        characterNameText.setText(characterName);
+
+        // characterNameButton Setup
+        ImageButton characterNameButton = new ImageButton(this);
+        characterNameButton.setLayoutParams(new ConstraintLayout.LayoutParams(TWENTY_DP, TWENTY_DP));
+        characterNameButton.setId(View.generateViewId());
+        characterNameButton.setBackground(getDrawable(R.drawable.ic_baseline_cancel_24));
+
+        // Remove button on click
+        characterNameButton.setOnClickListener(view -> {
+            ViewGroup button = (ViewGroup) view.getParent();
+            String characterNameString = ((TextView) button.getChildAt(0)).getText().toString();
+
+            // Remove parent view
+            ((ViewGroup) button.getParent()).removeView(button);
+
+            characterList.add(characterNameString);
+            updateCharacterArray();
+        });
+
+        // Adding view to layout
+        characterButton.addView(characterNameText);
+        characterButton.addView(characterNameButton);
+
+        // Add constraints between children
+        ConstraintSet characterNameConstraints = new ConstraintSet();
+        characterNameConstraints.clone(characterButton);
+
+        characterNameConstraints.connect(characterNameText.getId(),ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START,EIGHT_DP);
+        characterNameConstraints.connect(characterNameText.getId(),ConstraintSet.END,characterNameButton.getId(),ConstraintSet.START,FOUR_DP);
+        characterNameConstraints.connect(characterNameText.getId(),ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM,0);
+        characterNameConstraints.connect(characterNameText.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,0);
+
+        characterNameConstraints.connect(characterNameButton.getId(),ConstraintSet.START,characterNameText.getId(),ConstraintSet.END,0);
+        characterNameConstraints.connect(characterNameButton.getId(),ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END,ONE_DP);
+        characterNameConstraints.connect(characterNameButton.getId(),ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM,ONE_DP);
+        characterNameConstraints.connect(characterNameButton.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,ONE_DP);
+
+        characterNameConstraints.applyTo(characterButton);
+
+        return characterButton;
     }
 
     private ConstraintLayout writeRepliqueInfo(Cursor repliqueCursor, String keyword) {
@@ -115,10 +240,6 @@ public class Home extends AppCompatActivity {
         infosLayout.setLayoutParams(infosLayoutParams);
         infosLayout.setBackgroundColor(getColor(R.color.grey));
 
-        // Create parameters for ConstraintLayout children
-        ConstraintLayout.LayoutParams genericLayoutParams = new ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-
         // CharacterImage Setup
         ImageView characterImage = new ImageView(this);
 
@@ -133,9 +254,6 @@ public class Home extends AppCompatActivity {
         characterImage.setId(View.generateViewId());
         characterImage.setAdjustViewBounds(true);
 
-        String repliqueToDisplay = keyword == null ? replique :
-                String.valueOf(HtmlCompat.fromHtml(getFormattedReplique(replique,keyword), HtmlCompat.FROM_HTML_MODE_COMPACT));
-
         // RepliqueView Setup
         TextView repliqueView = new TextView(this);
         repliqueView.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
@@ -143,7 +261,13 @@ public class Home extends AppCompatActivity {
                 ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
         repliqueView.setId(View.generateViewId());
         repliqueView.setIncludeFontPadding(false);
-        repliqueView.setText(repliqueToDisplay);
+
+        if (keyword == null) {
+            repliqueView.setText(replique);
+        } else {
+            repliqueView.setText(HtmlCompat.fromHtml(getFormattedReplique(replique,keyword), HtmlCompat.FROM_HTML_MODE_COMPACT));
+        }
+
 
         // RepliqueView Setup
         TextView repliqueInfosView = new TextView(this);
@@ -206,7 +330,7 @@ public class Home extends AppCompatActivity {
             completeReplique += separatedReplique[i];
 
             if (i < separatedReplique.length - 1 || separatedReplique.length == originalKeywords.size()) {
-                completeReplique += "<b>" + originalKeywords.get(i) + "</b>";
+                    completeReplique += "<b>" + originalKeywords.get(i) + "</b>";
             }
         }
 
@@ -223,9 +347,26 @@ public class Home extends AppCompatActivity {
         return episodeCursor.getString(DICO_EPISODE_EPISODE_NAME);
     }
 
+    private void updateCharacterArray() {
+        characterArrayAdapter.clear();
+        characterArrayAdapter.addAll(characterList);
+        characterArrayAdapter.notifyDataSetChanged();
+    }
+
     private int convertDpToPx(int dpValue) {
         Resources r = this.getResources();
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, r.getDisplayMetrics());
+    }
+
+    private void populateFilters() {
+        characterFilter.clear();
+
+        for (int i = 0 ; i < flexboxLayout.getChildCount() ; i++) {
+            ViewGroup characterButtonView = (ViewGroup) flexboxLayout.getChildAt(i);
+            TextView characterNameView = (TextView) characterButtonView.getChildAt(0);
+
+            characterFilter.add(characterNameView.getText().toString());
+        }
     }
 
     private void populateCharacterList() {
@@ -238,8 +379,6 @@ public class Home extends AppCompatActivity {
         while (cursor.moveToNext()) {
             characterList.add(cursor.getString(DICO_PERSONNAGE_PERSONNAGE));
         }
-
-        characterArray = characterList.toArray(new String[0]);
 
         mDbHelper.close();
     }

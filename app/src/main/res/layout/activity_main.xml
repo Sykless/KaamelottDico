@@ -22,6 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/biggerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -33,7 +34,14 @@
                 android:inputType="text"
                 android:hint="@string/replique_hint"
                 android:importantForAutofill="no" />
-
+            <Button
+                android:id="@+id/searchButton"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clickable="false"
+                android:alpha="0.5"
+                android:text="@string/search_button" />
             <LinearLayout
                 android:id="@+id/filterLayout"
                 android:layout_width="match_parent"
@@ -46,7 +54,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
                     android:text="@string/character_button" />
 
                 <Button
@@ -55,9 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
                     android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
                     android:text="@string/livre_button" />
 
                 <Button
@@ -66,9 +71,45 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
                     android:text="@string/episode_button" />
             </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/characterFilterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone">
+
+                <AutoCompleteTextView
+                    android:id="@+id/characterInput"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="@string/character_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toTopOf="@+id/characterNamesFilter"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/characterNamesFilter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:alignContent="flex_start"
+                    app:alignItems="flex_start"
+                    app:flexWrap="wrap"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/characterInput" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:id="@+id/mainLayout"

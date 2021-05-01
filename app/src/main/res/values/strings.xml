@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Kaamelott Dico</string>
+
     <string name="replique_hint">Citation</string>
+    <string name="character_hint">Personnage</string>
+
+    <string name="search_button">Rechercher</string>
     <string name="character_button">Personnage</string>
     <string name="livre_button">Livre</string>
     <string name="episode_button">Episode</string>
